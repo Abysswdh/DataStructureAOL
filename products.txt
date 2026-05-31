@@ -1,0 +1,35 @@
+1|Samsung Galaxy S24 Ultra|Electronics|18999000.00|25|10.00
+2|Apple MacBook Air M3|Electronics|17499000.00|12|5.00
+3|Sony WH-1000XM5|Electronics|4999000.00|30|15.00
+4|Logitech MX Master 3S|Electronics|1499000.00|45|0.00
+5|JBL Flip 6|Electronics|1699000.00|38|20.00
+6|Indomie Goreng Special 5pcs|Food|17500.00|200|0.00
+7|Kopi Kapal Api 10 sachet|Food|25000.00|150|5.00
+8|Chitato Lite 68g|Food|12000.00|180|0.00
+9|Teh Botol Sosro 450ml|Food|5500.00|300|0.00
+10|SilverQueen Chunky Bar|Food|15000.00|120|10.00
+11|Ultra Milk 1L|Food|19500.00|90|0.00
+12|Nike Air Force 1|Fashion|1549000.00|20|0.00
+13|Uniqlo Oversized Tee|Fashion|249000.00|60|10.00
+14|Adidas Ultraboost Light|Fashion|2800000.00|15|25.00
+15|Levi's 501 Original|Fashion|899000.00|35|15.00
+16|Ray-Ban Wayfarer|Fashion|2350000.00|18|5.00
+17|Converse Chuck 70|Fashion|899000.00|40|20.00
+18|Yonex Astrox 88D|Sports|2899000.00|10|0.00
+19|Spalding NBA Official Ball|Sports|450000.00|25|10.00
+20|Li-Ning Badminton Shoes|Sports|1250000.00|22|15.00
+21|Kettler Dumbbell 5kg Set|Sports|350000.00|30|0.00
+22|Speedo Swim Goggles|Sports|275000.00|50|5.00
+23|Under Armour Gym Gloves|Sports|320000.00|35|10.00
+24|Atomic Habits|Books|99000.00|75|0.00
+25|The Psychology of Money|Books|109000.00|60|5.00
+26|Clean Code|Books|175000.00|40|10.00
+27|Sapiens Brief History|Books|129000.00|55|0.00
+28|Harry Potter Box Set|Books|850000.00|20|20.00
+29|IKEA KALLAX Shelf|Home|1299000.00|15|0.00
+30|Philips LED Bulb 12W 3pcs|Home|89000.00|100|10.00
+31|Oxone Cookware Set|Home|650000.00|28|15.00
+32|Krisbow Tool Kit 108pcs|Home|899000.00|18|5.00
+33|Ace Hardware Water Filter|Home|450000.00|22|0.00
+34|Xiaomi Smart Lamp 2|Home|399000.00|45|20.00
+35|Dyson V15 Detect Vacuum|Home|12499000.00|8|10.00

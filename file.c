@@ -1,0 +1,285 @@
+/*
+    Person 2: Putra Abyasa Wedha | 2902583635
+    File Handling & Product Management — Implementation
+
+    E-Commerce Product Management System
+
+    Using:
+    - File Processing (pipe-delimited text)
+    - AVL Tree integration (insert, delete, search from Person 1)
+    - Auto-save after every data modification
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "file.h"
+
+// FILE I/O ---------------------------------------------------------------------------
+
+// helper: traverse tree and write each node to file (in-order)
+static void saveHelper(Node *node, FILE *file) {
+    if (node == NULL) return;
+    saveHelper(node->left, file);
+
+    // format: id|name|category|price|stock|discount
+    fprintf(file, "%d|%s|%s|%.2f|%d|%.2f\n",
+            node->data.id,
+            node->data.name,
+            node->data.category,
+            node->data.price,
+            node->data.stock,
+            node->data.discount);
+
+    saveHelper(node->right, file);
+}
+
+// save all products to file (overwrite mode)
+void saveToFile(Node *root) {
+    FILE *file = fopen(DB_FILE, "w");
+    if (file == NULL) {
+        printf("[ERROR] Cannot open file for saving!\n");
+        return;
+    }
+    saveHelper(root, file);
+    fclose(file);
+}
+
+// load products from file, rebuild tree using insert()
+Node *loadFromFile(Node *root) {
+    FILE *file = fopen(DB_FILE, "r");
+    if (file == NULL) return root;  // file doesn't exist yet = OK
+
+    Product p;
+    while (fscanf(file, "%d|%99[^|]|%49[^|]|%f|%d|%f\n",
+                  &p.id, p.name, p.category,
+                  &p.price, &p.stock, &p.discount) == 6) {
+        root = insert(root, p);
+    }
+
+    fclose(file);
+    printf("[OK] Data loaded from %s\n", DB_FILE);
+    return root;
+}
+
+// PRODUCT MANAGEMENT ---------------------------------------------------------------------------
+
+// update product fields by ID
+// if price changes, must delete + re-insert to maintain BST ordering
+Node *updateProduct(Node *root, int id) {
+    Node *found = searchById(root, id);
+    if (found == NULL) {
+        printf("[INFO] Product ID %d not found.\n", id);
+        return root;
+    }
+
+    Product updated = found->data;
+    int choice;
+
+    printf("\n--- Current Product Data ---\n");
+    printf("ID       : %d\n", found->data.id);
+    printf("Name     : %s\n", found->data.name);
+    printf("Category : %s\n", found->data.category);
+    printf("Price    : Rp %.2f\n", found->data.price);
+    printf("Stock    : %d\n", found->data.stock);
+    printf("Discount : %.1f%%\n", found->data.discount);
+    printf("----------------------------\n\n");
+
+    printf("What do you want to update?\n");
+    printf("1. Name\n");
+    printf("2. Category\n");
+    printf("3. Price\n");
+    printf("4. Stock\n");
+    printf("5. Discount\n");
+    printf("6. Update All\n");
+    printf(">> ");
+    scanf("%d", &choice);
+    getchar();
+
+    // update name
+    if (choice == 1 || choice == 6) {
+        char newName[100];
+        do {
+            printf("Input new name[3-99 chars]: ");
+            scanf("%99[^\n]", newName);
+            getchar();
+        } while (!isValidName(newName));
+        strcpy(updated.name, newName);
+    }
+
+    // update category
+    if (choice == 2 || choice == 6) {
+        char newCat[50];
+        do {
+            printf("Input category[Electronics|Food|Fashion|Sports|Books|Home]: ");
+            scanf("%49s", newCat);
+            getchar();
+        } while (!isValidCategory(newCat));
+        strcpy(updated.category, newCat);
+    }
+
+    // update price
+    if (choice == 3 || choice == 6) {
+        float newPrice;
+        do {
+            printf("Input new price[> 0]: ");
+            scanf("%f", &newPrice);
+            getchar();
+        } while (!isValidPrice(newPrice));
+        updated.price = newPrice;
+    }
+
+    // update stock
+    if (choice == 4 || choice == 6) {
+        int newStock;
+        do {
+            printf("Input new stock[>= 0]: ");
+            scanf("%d", &newStock);
+            getchar();
+        } while (!isValidStock(newStock));
+        updated.stock = newStock;
+    }
+
+    // update discount
+    if (choice == 5 || choice == 6) {
+        float newDisc;
+        do {
+            printf("Input new discount[0-100]%%: ");
+            scanf("%f", &newDisc);
+            getchar();
+        } while (!isValidDiscount(newDisc));
+        updated.discount = newDisc;
+    }
+
+    // if price changed, delete and re-insert (price = BST key)
+    if (updated.price != found->data.price) {
+        root = deleteNodeById(root, id);
+        root = insert(root, updated);
+    } else {
+        found->data = updated;
+    }
+
+    saveToFile(root);
+    printf("\n[OK] Product ID %d updated successfully!\n", id);
+    return root;
+}
+
+// add stock to existing product
+Node *restockProduct(Node *root, int id, int addStock) {
+    Node *found = searchById(root, id);
+    if (found == NULL) {
+        printf("[INFO] Product ID %d not found.\n", id);
+        return root;
+    }
+
+    int oldStock = found->data.stock;
+    found->data.stock += addStock;
+
+    printf("[OK] %s restocked: %d -> %d (+%d)\n",
+           found->data.name, oldStock, found->data.stock, addStock);
+
+    saveToFile(root);
+    return root;
+}
+
+// STATISTICS ---------------------------------------------------------------------------
+
+// helper: total inventory value (discounted price * stock) recursive
+static float calcValueHelper(Node *root) {
+    if (root == NULL) return 0;
+
+    float discountedPrice = root->data.price * (1.0 - root->data.discount / 100.0);
+    float nodeValue = discountedPrice * root->data.stock;
+
+    return nodeValue + calcValueHelper(root->left) + calcValueHelper(root->right);
+}
+
+float calcTotalInventoryValue(Node *root) {
+    return calcValueHelper(root);
+}
+
+// helper: sum all stock across products
+int calcTotalStock(Node *root) {
+    if (root == NULL) return 0;
+    return root->data.stock + calcTotalStock(root->left) + calcTotalStock(root->right);
+}
+
+// helper: count products with active discounts
+int countDiscountedProducts(Node *root) {
+    if (root == NULL) return 0;
+
+    int count = (root->data.discount > 0) ? 1 : 0;
+    return count + countDiscountedProducts(root->left) + countDiscountedProducts(root->right);
+}
+
+// display full inventory summary
+void showStatistics(Node *root) {
+    int totalProducts = countNodes(root);
+
+    printf("\n========================================\n");
+    printf("        INVENTORY STATISTICS\n");
+    printf("========================================\n");
+
+    if (totalProducts == 0) {
+        printf("  No products in inventory.\n");
+        printf("========================================\n");
+        return;
+    }
+
+    printf("  Total products     : %d\n", totalProducts);
+    printf("  Total stock units  : %d\n", calcTotalStock(root));
+    printf("  Tree height (AVL)  : %d\n", getTreeHeight(root));
+    printf("  Discounted items   : %d\n", countDiscountedProducts(root));
+
+    Node *cheapest  = findCheapest(root);
+    Node *expensive = findMostExpensive(root);
+
+    if (cheapest)
+        printf("  Cheapest product   : %s (Rp %.2f)\n",
+               cheapest->data.name, cheapest->data.price);
+    if (expensive)
+        printf("  Most expensive     : %s (Rp %.2f)\n",
+               expensive->data.name, expensive->data.price);
+
+    printf("  --------------------------------\n");
+    printf("  Total inv. value   : Rp %.2f\n", calcTotalInventoryValue(root));
+    printf("========================================\n");
+}
+
+// VALIDATION ---------------------------------------------------------------------------
+
+// price must be positive
+int isValidPrice(float price) {
+    return price > 0;
+}
+
+// stock must be non-negative
+int isValidStock(int stock) {
+    return stock >= 0;
+}
+
+// discount must be between 0 and 100 inclusive
+int isValidDiscount(float discount) {
+    return discount >= 0 && discount <= 100;
+}
+
+// name must be 3-99 characters
+int isValidName(char name[]) {
+    int len = strlen(name);
+    return len >= 3 && len <= 99;
+}
+
+// must be one of the predefined categories
+int isValidCategory(char category[]) {
+    return (strcmp(category, "Electronics") == 0 ||
+            strcmp(category, "Food") == 0 ||
+            strcmp(category, "Fashion") == 0 ||
+            strcmp(category, "Sports") == 0 ||
+            strcmp(category, "Books") == 0 ||
+            strcmp(category, "Home") == 0);
+}
+
+// check if ID is not already in use
+int isUniqueId(Node *root, int id) {
+    return (searchById(root, id) == NULL);
+}
