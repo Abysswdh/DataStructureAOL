@@ -1,69 +1,71 @@
+/*
+    Person 1: Noel (Manuel Fides)
+    BST / AVL Core Logic — Header
+
+    E-Commerce Product Management System
+    Using: AVL Tree (self-balancing BST)
+
+    Key = price (float)
+    Tie-breaking = product ID (int)
+*/
+
 #ifndef BST_H
 #define BST_H
 
+// PRODUCT STRUCT ---------------------------------------------------------------------------
 
-
-// -----------------------------------------------------------
-// 1. PRODUCT struct
-//    (koordinasi dengan Aby – harus sama dengan product.h)
-// -----------------------------------------------------------
 typedef struct Product {
     int    id;
     char   name[100];
-    char   category[50];   // e.g. "Electronics", "Food", dll
+    char   category[50];    // e.g. "Electronics", "Food", "Fashion"
     float  price;
     int    stock;
-    float  discount;       // dalam persen, e.g. 10.0 = 10%
+    float  discount;        // dalam persen, e.g. 10.0 = 10%
 } Product;
 
-// -----------------------------------------------------------
-// 2. NODE struct  (AVL node, key = price)
-// -----------------------------------------------------------
+// NODE STRUCT (AVL) ---------------------------------------------------------------------------
+
 typedef struct Node {
     Product       data;
     struct Node  *left;
     struct Node  *right;
-    int           height;  // untuk AVL balancing
+    int           height;   // untuk AVL balancing
 } Node;
 
-// -----------------------------------------------------------
-// 3. AVL HELPER
-// -----------------------------------------------------------
+// AVL HELPER FUNCTIONS ---------------------------------------------------------------------------
+
 int   getHeight   (Node *n);
 int   getBalance  (Node *n);
 Node *rotateRight (Node *y);
 Node *rotateLeft  (Node *x);
 Node *rebalance   (Node *n);
 
-// -----------------------------------------------------------
-// 4. INSERT & DELETE
-// -----------------------------------------------------------
-Node *insert     (Node *root, Product p);
-Node *deleteNode (Node *root, float price);   // hapus by harga
-Node *findMin    (Node *n);                   // helper delete
+// INSERT & DELETE ---------------------------------------------------------------------------
 
-// -----------------------------------------------------------
-// 5. SEARCH
-// -----------------------------------------------------------
-Node *searchExact (Node *root, float price);
+Node *insert         (Node *root, Product p);
+Node *deleteNodeById (Node *root, int id);             // hapus by ID (exact match)
+Node *findMin        (Node *n);                        // helper: in-order successor
+
+// SEARCH ---------------------------------------------------------------------------
+
+Node *searchExact (Node *root, float price);           // cari 1 produk harga tepat
+Node *searchById  (Node *root, int id);                // cari by ID (exact match)
 void  searchRange (Node *root, float minPrice, float maxPrice);
 
-// -----------------------------------------------------------
-// 6. TRAVERSAL
-// -----------------------------------------------------------
-void inorder        (Node *root);  // Low  -> High
-void reverseInorder (Node *root);  // High -> Low
+// TRAVERSAL ---------------------------------------------------------------------------
 
-// -----------------------------------------------------------
-// 7. MIN & MAX
-// -----------------------------------------------------------
-Node *findCheapest      (Node *root);  // node paling kiri
-Node *findMostExpensive (Node *root);  // node paling kanan
+void inorder        (Node *root);   // Low  -> High (ascending price)
+void reverseInorder (Node *root);   // High -> Low  (descending price)
 
-// -----------------------------------------------------------
-// 8. UTILITY
-// -----------------------------------------------------------
-void  freeTree     (Node *root);   // bebaskan semua memory
-int   countNodes   (Node *root);   // hitung total produk
+// MIN & MAX ---------------------------------------------------------------------------
+
+Node *findCheapest      (Node *root);   // node paling kiri  = termurah
+Node *findMostExpensive (Node *root);   // node paling kanan = termahal
+
+// UTILITY ---------------------------------------------------------------------------
+
+void  freeTree      (Node *root);   // bebaskan semua memory (post-order)
+int   countNodes    (Node *root);   // hitung total produk di tree
+int   getTreeHeight (Node *root);   // tinggi tree (untuk debug/stats)
 
 #endif // BST_H
