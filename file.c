@@ -112,13 +112,31 @@ Node *updateProduct(Node *root, int id) {
 
     // update category
     if (choice == 2 || choice == 6) {
-        char newCat[50];
+        printf("\nSelect category:\n");
+        printf("  1. Electronics\n");
+        printf("  2. Food\n");
+        printf("  3. Fashion\n");
+        printf("  4. Sports\n");
+        printf("  5. Books\n");
+        printf("  6. Home\n\n");
+
+        int catChoice;
+        int catValid;
         do {
-            printf("Input category[Electronics|Food|Fashion|Sports|Books|Home]: ");
-            if (fgets(newCat, sizeof(newCat), stdin) == NULL) newCat[0] = '\0';
-            newCat[strcspn(newCat, "\r\n")] = '\0';
-        } while (!isValidCategory(newCat));
-        strcpy(updated.category, newCat);
+            printf("Category[1-6]: ");
+            catValid = safeReadInt(&catChoice);
+            if (!catValid || catChoice < 1 || catChoice > 6) {
+                printf("[!] Please enter a number between 1 and 6.\n");
+                catValid = 0;
+            }
+        } while (!catValid);
+
+        if (catChoice == 1)      strcpy(updated.category, "Electronics");
+        else if (catChoice == 2) strcpy(updated.category, "Food");
+        else if (catChoice == 3) strcpy(updated.category, "Fashion");
+        else if (catChoice == 4) strcpy(updated.category, "Sports");
+        else if (catChoice == 5) strcpy(updated.category, "Books");
+        else if (catChoice == 6) strcpy(updated.category, "Home");
     }
 
     // update price
@@ -358,4 +376,19 @@ int safeReadFloat(float *out) {
 
     *out = val;
     return 1;
+}
+
+// flush any leftover characters from stdin buffer
+// prevents buffer desync between getch() and fgets()
+void flushStdin(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// unified "Press Enter to continue" that uses fgets
+// replaces inconsistent getch()/getchar() calls
+void pressEnterToContinue(void) {
+    printf("\nPress Enter to continue ...");
+    char buf[256];
+    fgets(buf, sizeof(buf), stdin);
 }

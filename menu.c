@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
 #include <ctype.h>
 #include "menu.h"
 #include "file.h"
@@ -24,21 +23,21 @@
 // print the top border and column headers for the product table
 void printTableHeader(void) {
     printf("\n");
-    printf("+------+-----------------------------+----------------+-------+-----------------+----------+\n");
-    printf("| %-4s | %-27s | %-14s | %-5s | %-15s | %-8s |\n",
+    printf("+------+--------------------------------+--------------------+-------+-----------------+----------+\n");
+    printf("| %-4s | %-30s | %-18s | %-5s | %-15s | %-8s |\n",
            "ID", "Product Name", "Price (Rp)", "Stock", "Category", "Discount");
-    printf("+------+-----------------------------+----------------+-------+-----------------+----------+\n");
+    printf("+------+--------------------------------+--------------------+-------+-----------------+----------+\n");
 }
 
 // print one product row formatted to match the header columns
 void printProductRow(Product p) {
-    printf("| %-4d | %-27s | %14.2f | %5d | %-15s | %5.1f%%   |\n",
+    printf("| %-4d | %-30s | %18.2f | %5d | %-15s | %6.1f%%  |\n",
            p.id, p.name, p.price, p.stock, p.category, p.discount);
 }
 
 // print the closing border line
 void printTableFooter(void) {
-    printf("+------+-----------------------------+----------------+-------+-----------------+----------+\n");
+    printf("+------+--------------------------------+--------------------+-------+-----------------+----------+\n");
     printf("\n");
 }
 
@@ -91,7 +90,7 @@ void budgetRecommend(Node *root, float budget) {
 
     float finalPrice = root->data.price * (1.0 - root->data.discount / 100.0);
     if (finalPrice <= budget && root->data.stock > 0) {
-        printf("| %-4d | %-27s | %14.2f | %5d | %-15s | %5.1f%%   | Rp %12.2f |\n",
+        printf("| %-4d | %-30s | %18.2f | %5d | %-15s | %6.1f%%  | Rp %13.2f |\n",
                root->data.id,
                root->data.name,
                root->data.price,
@@ -126,7 +125,7 @@ void showHomeScreen(void) {
 
 // customer menu: view and search only, no data modification
 void customerMenu(Node **rootPtr) {
-    int choice;
+    int choice = -1;
 
     do {
         printf("\033[H\033[J");   // clear screen
@@ -144,8 +143,7 @@ void customerMenu(Node **rootPtr) {
         printf(">> ");
         if (!safeReadInt(&choice)) {
             printf("\n[!] Invalid input. Please enter a number (0-7).\n");
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
             choice = -1;
             continue;
         }
@@ -164,8 +162,7 @@ void customerMenu(Node **rootPtr) {
                 printf("  Total products: %d\n", countNodes(*rootPtr));
             }
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 2: view all products sorted by price descending
@@ -182,8 +179,7 @@ void customerMenu(Node **rootPtr) {
                 printf("  Total products: %d\n", countNodes(*rootPtr));
             }
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 3: search products within a price range
@@ -191,8 +187,8 @@ void customerMenu(Node **rootPtr) {
             printf("\033[H\033[J");
             printf("--- Search by Price Range ---\n\n");
 
-            float minPrice, maxPrice;
-            int valid;
+            float minPrice = 0, maxPrice = 0;
+            int valid = 0;
 
             do {
                 printf("Input minimum price[> 0]: ");
@@ -221,8 +217,7 @@ void customerMenu(Node **rootPtr) {
             searchRange(*rootPtr, minPrice, maxPrice);
             printTableFooter();
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 4: filter products by category
@@ -237,8 +232,8 @@ void customerMenu(Node **rootPtr) {
             printf("  5. Books\n");
             printf("  6. Home\n\n");
 
-            int catChoice;
-            int catValid;
+            int catChoice = 0;
+            int catValid = 0;
             char category[50];
 
             do {
@@ -263,8 +258,7 @@ void customerMenu(Node **rootPtr) {
             filterByCategory(*rootPtr, category);
             printTableFooter();
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 5: filter products by minimum discount percentage
@@ -272,8 +266,8 @@ void customerMenu(Node **rootPtr) {
             printf("\033[H\033[J");
             printf("--- Filter by Discount ---\n\n");
 
-            float minDiscount;
-            int discValid;
+            float minDiscount = -1;
+            int discValid = 0;
 
             do {
                 printf("Input minimum discount[0-100]%%: ");
@@ -291,8 +285,7 @@ void customerMenu(Node **rootPtr) {
             filterByDiscount(*rootPtr, minDiscount);
             printTableFooter();
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 6: budget recommendation — show affordable products after discount
@@ -300,8 +293,8 @@ void customerMenu(Node **rootPtr) {
             printf("\033[H\033[J");
             printf("--- Budget Recommendation ---\n\n");
 
-            float budget;
-            int budgetValid;
+            float budget = 0;
+            int budgetValid = 0;
 
             do {
                 printf("Input your budget (Rp)[> 0]: ");
@@ -316,16 +309,15 @@ void customerMenu(Node **rootPtr) {
 
             printf("\nProducts you can afford with Rp %.2f (after discount, in stock):\n", budget);
             printf("\n");
-            printf("+------+-----------------------------+----------------+-------+-----------------+----------+----------------+\n");
-            printf("| %-4s | %-27s | %-14s | %-5s | %-15s | %-8s | %-14s |\n",
+            printf("+------+--------------------------------+--------------------+-------+-----------------+----------+------------------+\n");
+            printf("| %-4s | %-30s | %-18s | %-5s | %-15s | %-8s | %-16s |\n",
                    "ID", "Product Name", "Price (Rp)", "Stock", "Category", "Discount", "Final Price");
-            printf("+------+-----------------------------+----------------+-------+-----------------+----------+----------------+\n");
+            printf("+------+--------------------------------+--------------------+-------+-----------------+----------+------------------+\n");
             budgetRecommend(*rootPtr, budget);
-            printf("+------+-----------------------------+----------------+-------+-----------------+----------+----------------+\n");
+            printf("+------+--------------------------------+--------------------+-------+-----------------+----------+------------------+\n");
             printf("\n");
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 7: view cheapest and most expensive products
@@ -362,8 +354,7 @@ void customerMenu(Node **rootPtr) {
                 printf("========================================\n");
             }
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 0: back to home
@@ -374,8 +365,7 @@ void customerMenu(Node **rootPtr) {
         // invalid choice
         else {
             printf("\nPlease choose between 0 to 7!\n");
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
     } while (choice != 0);
@@ -385,7 +375,7 @@ void customerMenu(Node **rootPtr) {
 
 // admin menu: full CRUD access + statistics
 void adminMenu(Node **rootPtr) {
-    int choice;
+    int choice = -1;
 
     do {
         printf("\033[H\033[J");   // clear screen
@@ -403,8 +393,7 @@ void adminMenu(Node **rootPtr) {
         printf(">> ");
         if (!safeReadInt(&choice)) {
             printf("\n[!] Invalid input. Please enter a number (0-7).\n");
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
             choice = -1;
             continue;
         }
@@ -415,7 +404,15 @@ void adminMenu(Node **rootPtr) {
             printf("--- Add New Product ---\n\n");
 
             Product p;
-            int inputValid;
+            int inputValid = 0;
+
+            // initialize all fields to safe defaults
+            p.id = 0;
+            p.name[0] = '\0';
+            p.category[0] = '\0';
+            p.price = 0;
+            p.stock = 0;
+            p.discount = 0;
 
             // validate unique ID
             do {
@@ -437,6 +434,9 @@ void adminMenu(Node **rootPtr) {
                 printf("Input product name[3-99 chars]: ");
                 if (fgets(p.name, sizeof(p.name), stdin) == NULL) p.name[0] = '\0';
                 p.name[strcspn(p.name, "\r\n")] = '\0';
+                if (!isValidName(p.name)) {
+                    printf("[!] Name must be between 3 and 99 characters.\n");
+                }
             } while (!isValidName(p.name));
 
             // validate category by selection
@@ -448,8 +448,8 @@ void adminMenu(Node **rootPtr) {
             printf("  5. Books\n");
             printf("  6. Home\n\n");
 
-            int catChoice;
-            int catValid;
+            int catChoice = 0;
+            int catValid = 0;
             do {
                 printf("Category[1-6]: ");
                 catValid = safeReadInt(&catChoice);
@@ -513,8 +513,7 @@ void adminMenu(Node **rootPtr) {
             printProductRow(p);
             printTableFooter();
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 2: delete a product by ID
@@ -524,8 +523,7 @@ void adminMenu(Node **rootPtr) {
 
             if (countNodes(*rootPtr) == 0) {
                 printf("There is no data !\n");
-                printf("\nPress Enter to continue ...");
-                getch();
+                pressEnterToContinue();
                 continue;
             }
 
@@ -535,14 +533,19 @@ void adminMenu(Node **rootPtr) {
             inorder(*rootPtr);
             printTableFooter();
 
-            int id;
-            printf("Input product ID to delete: ");
-            if (!safeReadInt(&id)) {
-                printf("\n[!] Invalid input. Please enter a valid product ID number.\n");
-                printf("\nPress Enter to continue ...");
-                getch();
-                continue;
-            }
+            int id = 0;
+            int idValid = 0;
+
+            do {
+                printf("Input product ID to delete[> 0]: ");
+                idValid = safeReadInt(&id);
+                if (!idValid) {
+                    printf("[!] Invalid input. Please enter a valid product ID number.\n");
+                } else if (id <= 0) {
+                    printf("[!] ID must be greater than 0.\n");
+                    idValid = 0;
+                }
+            } while (!idValid);
 
             Node *found = searchById(*rootPtr, id);
             if (found == NULL) {
@@ -561,11 +564,11 @@ void adminMenu(Node **rootPtr) {
                         break;
                     }
                     confirmBuf[strcspn(confirmBuf, "\r\n")] = '\0';
-                    if (strlen(confirmBuf) == 1) {
+                    if (strlen(confirmBuf) == 1 && (confirmBuf[0] == 'y' || confirmBuf[0] == 'n')) {
                         confirm = confirmBuf[0];
                     } else {
                         confirm = '\0';
-                        printf("[!] Please enter exactly 'y' or 'n'.\n");
+                        printf("[!] Please enter exactly 'y' or 'n' (lowercase only).\n");
                     }
                 } while (confirm != 'y' && confirm != 'n');
 
@@ -578,8 +581,7 @@ void adminMenu(Node **rootPtr) {
                 }
             }
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 3: update a product by ID (Person 2 handles the input internally)
@@ -589,24 +591,27 @@ void adminMenu(Node **rootPtr) {
 
             if (countNodes(*rootPtr) == 0) {
                 printf("There is no data !\n");
-                printf("\nPress Enter to continue ...");
-                getch();
+                pressEnterToContinue();
                 continue;
             }
 
-            int id;
-            printf("Input product ID to update: ");
-            if (!safeReadInt(&id)) {
-                printf("\n[!] Invalid input. Please enter a valid product ID number.\n");
-                printf("\nPress Enter to continue ...");
-                getch();
-                continue;
-            }
+            int id = 0;
+            int idValid = 0;
+
+            do {
+                printf("Input product ID to update[> 0]: ");
+                idValid = safeReadInt(&id);
+                if (!idValid) {
+                    printf("[!] Invalid input. Please enter a valid product ID number.\n");
+                } else if (id <= 0) {
+                    printf("[!] ID must be greater than 0.\n");
+                    idValid = 0;
+                }
+            } while (!idValid);
 
             *rootPtr = updateProduct(*rootPtr, id);
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 4: restock a product by ID
@@ -616,19 +621,23 @@ void adminMenu(Node **rootPtr) {
 
             if (countNodes(*rootPtr) == 0) {
                 printf("There is no data !\n");
-                printf("\nPress Enter to continue ...");
-                getch();
+                pressEnterToContinue();
                 continue;
             }
 
-            int id;
-            printf("Input product ID to restock: ");
-            if (!safeReadInt(&id)) {
-                printf("\n[!] Invalid input. Please enter a valid product ID number.\n");
-                printf("\nPress Enter to continue ...");
-                getch();
-                continue;
-            }
+            int id = 0;
+            int idValid = 0;
+
+            do {
+                printf("Input product ID to restock[> 0]: ");
+                idValid = safeReadInt(&id);
+                if (!idValid) {
+                    printf("[!] Invalid input. Please enter a valid product ID number.\n");
+                } else if (id <= 0) {
+                    printf("[!] ID must be greater than 0.\n");
+                    idValid = 0;
+                }
+            } while (!idValid);
 
             Node *found = searchById(*rootPtr, id);
             if (found == NULL) {
@@ -636,8 +645,8 @@ void adminMenu(Node **rootPtr) {
             } else {
                 printf("Current stock for \"%s\": %d\n", found->data.name, found->data.stock);
 
-                int addStock;
-                int stockValid;
+                int addStock = 0;
+                int stockValid = 0;
                 do {
                     printf("Input quantity to add[> 0]: ");
                     stockValid = safeReadInt(&addStock);
@@ -652,8 +661,7 @@ void adminMenu(Node **rootPtr) {
                 *rootPtr = restockProduct(*rootPtr, id, addStock);
             }
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 5: view all products sorted by price ascending
@@ -671,8 +679,7 @@ void adminMenu(Node **rootPtr) {
                 printf("  Total inventory value: Rp %.2f\n", calcTotalInventoryValue(*rootPtr));
             }
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 6: view inventory statistics (Person 2's function)
@@ -682,8 +689,7 @@ void adminMenu(Node **rootPtr) {
 
             showStatistics(*rootPtr);
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 7: filter products by minimum stock availability
@@ -691,8 +697,8 @@ void adminMenu(Node **rootPtr) {
             printf("\033[H\033[J");
             printf("--- Filter by Stock Availability ---\n\n");
 
-            int minStock;
-            int stockValid;
+            int minStock = -1;
+            int stockValid = 0;
 
             do {
                 printf("Input minimum stock[>= 0]: ");
@@ -710,8 +716,7 @@ void adminMenu(Node **rootPtr) {
             filterByStock(*rootPtr, minStock);
             printTableFooter();
 
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
         // Option 0: back to home
@@ -722,8 +727,7 @@ void adminMenu(Node **rootPtr) {
         // invalid choice
         else {
             printf("\nPlease choose between 0 to 7!\n");
-            printf("\nPress Enter to continue ...");
-            getch();
+            pressEnterToContinue();
         }
 
     } while (choice != 0);

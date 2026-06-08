@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bst.h"
+#include "menu.h"
 
 // AVL HELPER FUNCTIONS ---------------------------------------------------------------------------
 
@@ -260,13 +261,7 @@ void searchRange(Node *root, float minPrice, float maxPrice) {
 
     // print if current node is within range
     if (root->data.price >= minPrice && root->data.price <= maxPrice) {
-        printf("  [ID:%d] %-25s | Rp %10.2f | Stok: %3d | Kat: %-15s | Diskon: %.0f%%\n",
-               root->data.id,
-               root->data.name,
-               root->data.price,
-               root->data.stock,
-               root->data.category,
-               root->data.discount);
+        printProductRow(root->data);
     }
 
     // only go right if there could be nodes <= maxPrice
@@ -281,13 +276,7 @@ void searchRange(Node *root, float minPrice, float maxPrice) {
 void inorder(Node *root) {
     if (root == NULL) return;
     inorder(root->left);
-    printf("  [ID:%d] %-25s | Rp %10.2f | Stok: %3d | Kat: %-15s | Diskon: %.0f%%\n",
-           root->data.id,
-           root->data.name,
-           root->data.price,
-           root->data.stock,
-           root->data.category,
-           root->data.discount);
+    printProductRow(root->data);
     inorder(root->right);
 }
 
@@ -296,13 +285,7 @@ void inorder(Node *root) {
 void reverseInorder(Node *root) {
     if (root == NULL) return;
     reverseInorder(root->right);
-    printf("  [ID:%d] %-25s | Rp %10.2f | Stok: %3d | Kat: %-15s | Diskon: %.0f%%\n",
-           root->data.id,
-           root->data.name,
-           root->data.price,
-           root->data.stock,
-           root->data.category,
-           root->data.discount);
+    printProductRow(root->data);
     reverseInorder(root->left);
 }
 

@@ -21,13 +21,12 @@ int main() {
     // auto-load from file at startup
     root = loadFromFile(root);
 
-    int choice;
+    int choice = -1;
     do {
         showHomeScreen();
         if (!safeReadInt(&choice)) {
             printf("\n[!] Invalid input. Please enter a number (1-3).\n");
-            printf("\nPress Enter to continue...");
-            getchar();
+            pressEnterToContinue();
             choice = -1;
             continue;
         }
@@ -46,8 +45,7 @@ int main() {
                 break;
             default:
                 printf("\nPlease choose 1-3!\n");
-                printf("\nPress Enter to continue...");
-                getchar();
+                pressEnterToContinue();
         }
     } while (choice != 3);
 
@@ -55,3 +53,4 @@ int main() {
     freeTree(root);
     return 0;
 }
+

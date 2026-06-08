@@ -48,7 +48,9 @@ int isUniqueId     (Node *root, int id);
 
 // SAFE INPUT HELPERS ---------------------------------------------------------------------------
 
-int safeReadInt   (int *out);
-int safeReadFloat (float *out);
+int  safeReadInt           (int *out);
+int  safeReadFloat         (float *out);
+void flushStdin            (void);
+void pressEnterToContinue  (void);
 
 #endif // FILE_H
