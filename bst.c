@@ -1,5 +1,5 @@
 /*
-    Person 1: Noel (Manuel Fides)
+    Person 1: Manuel Fides Waluyo (2902572096)
     BST / AVL Core Logic — Implementation
 
     E-Commerce Product Management System

@@ -1,5 +1,5 @@
 /*
-    Person 3: Damario | [Student ID]
+    Person 3: Damario | [2902601064]
     UI/UX & Filtering Features — Implementation
 
     E-Commerce Product Management System
@@ -30,9 +30,19 @@ void printTableHeader(void) {
 }
 
 // print one product row formatted to match the header columns
+// truncates name to 30 chars to keep table aligned
 void printProductRow(Product p) {
-    printf("| %-4d | %-30s | %18.2f | %5d | %-15s | %6.1f%%  |\n",
-           p.id, p.name, p.price, p.stock, p.category, p.discount);
+    char truncName[31];
+    strncpy(truncName, p.name, 30);
+    truncName[30] = '\0';
+    // if name was truncated, show "..." at the end
+    if (strlen(p.name) > 30) {
+        truncName[27] = '.';
+        truncName[28] = '.';
+        truncName[29] = '.';
+    }
+    printf("| %-4d | %-30s | %18.2f | %5d | %-15s | %5.1f%%  |\n",
+           p.id, truncName, p.price, p.stock, p.category, p.discount);
 }
 
 // print the closing border line
@@ -90,9 +100,17 @@ void budgetRecommend(Node *root, float budget) {
 
     float finalPrice = root->data.price * (1.0 - root->data.discount / 100.0);
     if (finalPrice <= budget && root->data.stock > 0) {
-        printf("| %-4d | %-30s | %18.2f | %5d | %-15s | %6.1f%%  | Rp %13.2f |\n",
+        char truncName[31];
+        strncpy(truncName, root->data.name, 30);
+        truncName[30] = '\0';
+        if (strlen(root->data.name) > 30) {
+            truncName[27] = '.';
+            truncName[28] = '.';
+            truncName[29] = '.';
+        }
+        printf("| %-4d | %-30s | %18.2f | %5d | %-15s | %5.1f%%  | Rp %13.2f |\n",
                root->data.id,
-               root->data.name,
+               truncName,
                root->data.price,
                root->data.stock,
                root->data.category,
