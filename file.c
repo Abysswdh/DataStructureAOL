@@ -75,6 +75,7 @@ Node *updateProduct(Node *root, int id) {
 
     Product updated = found->data;
     int choice;
+    int inputValid;
 
     printf("\n--- Current Product Data ---\n");
     printf("ID       : %d\n", found->data.id);
@@ -93,16 +94,18 @@ Node *updateProduct(Node *root, int id) {
     printf("5. Discount\n");
     printf("6. Update All\n");
     printf(">> ");
-    scanf("%d", &choice);
-    getchar();
+    if (!safeReadInt(&choice) || choice < 1 || choice > 6) {
+        printf("[!] Invalid choice. Please enter a number between 1 and 6.\n");
+        return root;
+    }
 
     // update name
     if (choice == 1 || choice == 6) {
         char newName[100];
         do {
             printf("Input new name[3-99 chars]: ");
-            scanf("%99[^\n]", newName);
-            getchar();
+            if (fgets(newName, sizeof(newName), stdin) == NULL) newName[0] = '\0';
+            newName[strcspn(newName, "\r\n")] = '\0';
         } while (!isValidName(newName));
         strcpy(updated.name, newName);
     }
@@ -112,8 +115,8 @@ Node *updateProduct(Node *root, int id) {
         char newCat[50];
         do {
             printf("Input category[Electronics|Food|Fashion|Sports|Books|Home]: ");
-            scanf("%49s", newCat);
-            getchar();
+            if (fgets(newCat, sizeof(newCat), stdin) == NULL) newCat[0] = '\0';
+            newCat[strcspn(newCat, "\r\n")] = '\0';
         } while (!isValidCategory(newCat));
         strcpy(updated.category, newCat);
     }
@@ -123,9 +126,14 @@ Node *updateProduct(Node *root, int id) {
         float newPrice;
         do {
             printf("Input new price[> 0]: ");
-            scanf("%f", &newPrice);
-            getchar();
-        } while (!isValidPrice(newPrice));
+            inputValid = safeReadFloat(&newPrice);
+            if (!inputValid) {
+                printf("[!] Invalid input. Please enter a number.\n");
+            } else if (!isValidPrice(newPrice)) {
+                printf("[!] Price must be greater than 0.\n");
+                inputValid = 0;
+            }
+        } while (!inputValid);
         updated.price = newPrice;
     }
 
@@ -134,9 +142,14 @@ Node *updateProduct(Node *root, int id) {
         int newStock;
         do {
             printf("Input new stock[>= 0]: ");
-            scanf("%d", &newStock);
-            getchar();
-        } while (!isValidStock(newStock));
+            inputValid = safeReadInt(&newStock);
+            if (!inputValid) {
+                printf("[!] Invalid input. Please enter a number.\n");
+            } else if (!isValidStock(newStock)) {
+                printf("[!] Stock must be 0 or greater.\n");
+                inputValid = 0;
+            }
+        } while (!inputValid);
         updated.stock = newStock;
     }
 
@@ -145,9 +158,14 @@ Node *updateProduct(Node *root, int id) {
         float newDisc;
         do {
             printf("Input new discount[0-100]%%: ");
-            scanf("%f", &newDisc);
-            getchar();
-        } while (!isValidDiscount(newDisc));
+            inputValid = safeReadFloat(&newDisc);
+            if (!inputValid) {
+                printf("[!] Invalid input. Please enter a number.\n");
+            } else if (!isValidDiscount(newDisc)) {
+                printf("[!] Discount must be between 0 and 100.\n");
+                inputValid = 0;
+            }
+        } while (!inputValid);
         updated.discount = newDisc;
     }
 
@@ -269,7 +287,7 @@ int isValidName(char name[]) {
     return len >= 3 && len <= 99;
 }
 
-// must be one of the predefined categories
+// must be one of the predefined categories (case-sensitive)
 int isValidCategory(char category[]) {
     return (strcmp(category, "Electronics") == 0 ||
             strcmp(category, "Food") == 0 ||
@@ -282,4 +300,62 @@ int isValidCategory(char category[]) {
 // check if ID is not already in use
 int isUniqueId(Node *root, int id) {
     return (searchById(root, id) == NULL);
+}
+
+// SAFE INPUT HELPERS ---------------------------------------------------------------------------
+
+// read an integer safely from stdin (full line read + strict validation)
+// returns 1 on success (value stored in *out), 0 on failure (*out unchanged)
+int safeReadInt(int *out) {
+    char buf[256];
+    if (fgets(buf, sizeof(buf), stdin) == NULL) return 0;
+
+    // strip trailing newline/carriage return
+    buf[strcspn(buf, "\r\n")] = '\0';
+
+    // reject empty input
+    if (buf[0] == '\0') return 0;
+
+    char *endptr;
+    long val = strtol(buf, &endptr, 10);
+
+    // no conversion performed (e.g. input was only letters/spaces)
+    if (endptr == buf) return 0;
+
+    // skip trailing whitespace
+    while (*endptr == ' ' || *endptr == '\t') endptr++;
+
+    // reject if there are leftover non-whitespace characters
+    if (*endptr != '\0') return 0;
+
+    *out = (int)val;
+    return 1;
+}
+
+// read a float safely from stdin (full line read + strict validation)
+// returns 1 on success (value stored in *out), 0 on failure (*out unchanged)
+int safeReadFloat(float *out) {
+    char buf[256];
+    if (fgets(buf, sizeof(buf), stdin) == NULL) return 0;
+
+    // strip trailing newline/carriage return
+    buf[strcspn(buf, "\r\n")] = '\0';
+
+    // reject empty input
+    if (buf[0] == '\0') return 0;
+
+    char *endptr;
+    float val = strtof(buf, &endptr);
+
+    // no conversion performed
+    if (endptr == buf) return 0;
+
+    // skip trailing whitespace
+    while (*endptr == ' ' || *endptr == '\t') endptr++;
+
+    // reject if there are leftover non-whitespace characters
+    if (*endptr != '\0') return 0;
+
+    *out = val;
+    return 1;
 }

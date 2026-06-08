@@ -24,8 +24,13 @@ int main() {
     int choice;
     do {
         showHomeScreen();
-        scanf("%d", &choice);
-        getchar();
+        if (!safeReadInt(&choice)) {
+            printf("\n[!] Invalid input. Please enter a number (1-3).\n");
+            printf("\nPress Enter to continue...");
+            getchar();
+            choice = -1;
+            continue;
+        }
 
         switch (choice) {
             case 1:

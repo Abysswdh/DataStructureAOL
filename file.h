@@ -46,4 +46,9 @@ int isValidName    (char name[]);
 int isValidCategory(char category[]);
 int isUniqueId     (Node *root, int id);
 
+// SAFE INPUT HELPERS ---------------------------------------------------------------------------
+
+int safeReadInt   (int *out);
+int safeReadFloat (float *out);
+
 #endif // FILE_H

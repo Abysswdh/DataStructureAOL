@@ -8,7 +8,7 @@
     - Console-based UI with formatted table display
     - AVL Tree integration (Person 1 & 2)
     - Recursive in-order filtering for category, discount, stock, budget
-    - Input validation with do-while loops
+    - Input validation with safeReadInt/safeReadFloat (no more scanf bugs)
 */
 
 #include <stdio.h>
@@ -142,8 +142,13 @@ void customerMenu(Node **rootPtr) {
         printf("  7. View Cheapest & Most Expensive\n");
         printf("  0. Back to Home\n\n");
         printf(">> ");
-        scanf("%d", &choice);
-        getchar();
+        if (!safeReadInt(&choice)) {
+            printf("\n[!] Invalid input. Please enter a number (0-7).\n");
+            printf("\nPress Enter to continue ...");
+            getch();
+            choice = -1;
+            continue;
+        }
 
         // Option 1: view all products sorted by price ascending
         if (choice == 1) {
@@ -187,18 +192,29 @@ void customerMenu(Node **rootPtr) {
             printf("--- Search by Price Range ---\n\n");
 
             float minPrice, maxPrice;
+            int valid;
 
             do {
                 printf("Input minimum price[> 0]: ");
-                scanf("%f", &minPrice);
-                getchar();
-            } while (minPrice <= 0);
+                valid = safeReadFloat(&minPrice);
+                if (!valid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (minPrice <= 0) {
+                    printf("[!] Minimum price must be greater than 0.\n");
+                    valid = 0;
+                }
+            } while (!valid);
 
             do {
                 printf("Input maximum price[> min]: ");
-                scanf("%f", &maxPrice);
-                getchar();
-            } while (maxPrice <= minPrice);
+                valid = safeReadFloat(&maxPrice);
+                if (!valid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (maxPrice <= minPrice) {
+                    printf("[!] Maximum price must be greater than minimum (%.2f).\n", minPrice);
+                    valid = 0;
+                }
+            } while (!valid);
 
             printf("\nProducts in range Rp %.2f - Rp %.2f:\n", minPrice, maxPrice);
             printTableHeader();
@@ -222,13 +238,17 @@ void customerMenu(Node **rootPtr) {
             printf("  6. Home\n\n");
 
             int catChoice;
+            int catValid;
             char category[50];
 
             do {
                 printf("Select category[1-6]: ");
-                scanf("%d", &catChoice);
-                getchar();
-            } while (catChoice < 1 || catChoice > 6);
+                catValid = safeReadInt(&catChoice);
+                if (!catValid || catChoice < 1 || catChoice > 6) {
+                    printf("[!] Please enter a number between 1 and 6.\n");
+                    catValid = 0;
+                }
+            } while (!catValid);
 
             // map number to category string
             if (catChoice == 1)      strcpy(category, "Electronics");
@@ -253,12 +273,18 @@ void customerMenu(Node **rootPtr) {
             printf("--- Filter by Discount ---\n\n");
 
             float minDiscount;
+            int discValid;
 
             do {
                 printf("Input minimum discount[0-100]%%: ");
-                scanf("%f", &minDiscount);
-                getchar();
-            } while (minDiscount < 0 || minDiscount > 100);
+                discValid = safeReadFloat(&minDiscount);
+                if (!discValid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (minDiscount < 0 || minDiscount > 100) {
+                    printf("[!] Discount must be between 0 and 100.\n");
+                    discValid = 0;
+                }
+            } while (!discValid);
 
             printf("\nShowing products with discount >= %.1f%%:\n", minDiscount);
             printTableHeader();
@@ -275,12 +301,18 @@ void customerMenu(Node **rootPtr) {
             printf("--- Budget Recommendation ---\n\n");
 
             float budget;
+            int budgetValid;
 
             do {
                 printf("Input your budget (Rp)[> 0]: ");
-                scanf("%f", &budget);
-                getchar();
-            } while (budget <= 0);
+                budgetValid = safeReadFloat(&budget);
+                if (!budgetValid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (budget <= 0) {
+                    printf("[!] Budget must be greater than 0.\n");
+                    budgetValid = 0;
+                }
+            } while (!budgetValid);
 
             printf("\nProducts you can afford with Rp %.2f (after discount, in stock):\n", budget);
             printf("\n");
@@ -369,8 +401,13 @@ void adminMenu(Node **rootPtr) {
         printf("  7. Filter by Stock Availability\n");
         printf("  0. Back to Home\n\n");
         printf(">> ");
-        scanf("%d", &choice);
-        getchar();
+        if (!safeReadInt(&choice)) {
+            printf("\n[!] Invalid input. Please enter a number (0-7).\n");
+            printf("\nPress Enter to continue ...");
+            getch();
+            choice = -1;
+            continue;
+        }
 
         // Option 1: add a new product with full validation
         if (choice == 1) {
@@ -378,24 +415,28 @@ void adminMenu(Node **rootPtr) {
             printf("--- Add New Product ---\n\n");
 
             Product p;
+            int inputValid;
 
             // validate unique ID
             do {
                 printf("Input product ID[> 0, unique]: ");
-                scanf("%d", &p.id);
-                getchar();
-                if (p.id <= 0) {
+                inputValid = safeReadInt(&p.id);
+                if (!inputValid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (p.id <= 0) {
                     printf("[!] ID must be greater than 0.\n");
+                    inputValid = 0;
                 } else if (!isUniqueId(*rootPtr, p.id)) {
                     printf("[!] ID %d already exists.\n", p.id);
+                    inputValid = 0;
                 }
-            } while (p.id <= 0 || !isUniqueId(*rootPtr, p.id));
+            } while (!inputValid);
 
             // validate product name
             do {
                 printf("Input product name[3-99 chars]: ");
-                scanf("%99[^\n]", p.name);
-                getchar();
+                if (fgets(p.name, sizeof(p.name), stdin) == NULL) p.name[0] = '\0';
+                p.name[strcspn(p.name, "\r\n")] = '\0';
             } while (!isValidName(p.name));
 
             // validate category by selection
@@ -408,11 +449,15 @@ void adminMenu(Node **rootPtr) {
             printf("  6. Home\n\n");
 
             int catChoice;
+            int catValid;
             do {
                 printf("Category[1-6]: ");
-                scanf("%d", &catChoice);
-                getchar();
-            } while (catChoice < 1 || catChoice > 6);
+                catValid = safeReadInt(&catChoice);
+                if (!catValid || catChoice < 1 || catChoice > 6) {
+                    printf("[!] Please enter a number between 1 and 6.\n");
+                    catValid = 0;
+                }
+            } while (!catValid);
 
             if (catChoice == 1)      strcpy(p.category, "Electronics");
             else if (catChoice == 2) strcpy(p.category, "Food");
@@ -424,23 +469,38 @@ void adminMenu(Node **rootPtr) {
             // validate price
             do {
                 printf("Input price (Rp)[> 0]: ");
-                scanf("%f", &p.price);
-                getchar();
-            } while (!isValidPrice(p.price));
+                inputValid = safeReadFloat(&p.price);
+                if (!inputValid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (!isValidPrice(p.price)) {
+                    printf("[!] Price must be greater than 0.\n");
+                    inputValid = 0;
+                }
+            } while (!inputValid);
 
             // validate stock
             do {
                 printf("Input stock[>= 0]: ");
-                scanf("%d", &p.stock);
-                getchar();
-            } while (!isValidStock(p.stock));
+                inputValid = safeReadInt(&p.stock);
+                if (!inputValid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (!isValidStock(p.stock)) {
+                    printf("[!] Stock must be 0 or greater.\n");
+                    inputValid = 0;
+                }
+            } while (!inputValid);
 
             // validate discount
             do {
                 printf("Input discount[0-100]%%: ");
-                scanf("%f", &p.discount);
-                getchar();
-            } while (!isValidDiscount(p.discount));
+                inputValid = safeReadFloat(&p.discount);
+                if (!inputValid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (!isValidDiscount(p.discount)) {
+                    printf("[!] Discount must be between 0 and 100.\n");
+                    inputValid = 0;
+                }
+            } while (!inputValid);
 
             // insert into AVL tree and save
             *rootPtr = insert(*rootPtr, p);
@@ -477,8 +537,12 @@ void adminMenu(Node **rootPtr) {
 
             int id;
             printf("Input product ID to delete: ");
-            scanf("%d", &id);
-            getchar();
+            if (!safeReadInt(&id)) {
+                printf("\n[!] Invalid input. Please enter a valid product ID number.\n");
+                printf("\nPress Enter to continue ...");
+                getch();
+                continue;
+            }
 
             Node *found = searchById(*rootPtr, id);
             if (found == NULL) {
@@ -486,13 +550,23 @@ void adminMenu(Node **rootPtr) {
             } else {
                 // confirm deletion
                 char confirm;
+                char confirmBuf[256];
                 printf("\nDeleting: [ID:%d] %s — Rp %.2f\n",
                        found->data.id, found->data.name, found->data.price);
 
                 do {
                     printf("Are you sure?[y|n]: ");
-                    scanf(" %c", &confirm);
-                    getchar();
+                    if (fgets(confirmBuf, sizeof(confirmBuf), stdin) == NULL) {
+                        confirm = 'n';
+                        break;
+                    }
+                    confirmBuf[strcspn(confirmBuf, "\r\n")] = '\0';
+                    if (strlen(confirmBuf) == 1) {
+                        confirm = confirmBuf[0];
+                    } else {
+                        confirm = '\0';
+                        printf("[!] Please enter exactly 'y' or 'n'.\n");
+                    }
                 } while (confirm != 'y' && confirm != 'n');
 
                 if (confirm == 'y') {
@@ -522,8 +596,12 @@ void adminMenu(Node **rootPtr) {
 
             int id;
             printf("Input product ID to update: ");
-            scanf("%d", &id);
-            getchar();
+            if (!safeReadInt(&id)) {
+                printf("\n[!] Invalid input. Please enter a valid product ID number.\n");
+                printf("\nPress Enter to continue ...");
+                getch();
+                continue;
+            }
 
             *rootPtr = updateProduct(*rootPtr, id);
 
@@ -545,8 +623,12 @@ void adminMenu(Node **rootPtr) {
 
             int id;
             printf("Input product ID to restock: ");
-            scanf("%d", &id);
-            getchar();
+            if (!safeReadInt(&id)) {
+                printf("\n[!] Invalid input. Please enter a valid product ID number.\n");
+                printf("\nPress Enter to continue ...");
+                getch();
+                continue;
+            }
 
             Node *found = searchById(*rootPtr, id);
             if (found == NULL) {
@@ -555,11 +637,17 @@ void adminMenu(Node **rootPtr) {
                 printf("Current stock for \"%s\": %d\n", found->data.name, found->data.stock);
 
                 int addStock;
+                int stockValid;
                 do {
                     printf("Input quantity to add[> 0]: ");
-                    scanf("%d", &addStock);
-                    getchar();
-                } while (addStock <= 0);
+                    stockValid = safeReadInt(&addStock);
+                    if (!stockValid) {
+                        printf("[!] Invalid input. Please enter a number.\n");
+                    } else if (addStock <= 0) {
+                        printf("[!] Quantity must be greater than 0.\n");
+                        stockValid = 0;
+                    }
+                } while (!stockValid);
 
                 *rootPtr = restockProduct(*rootPtr, id, addStock);
             }
@@ -604,12 +692,18 @@ void adminMenu(Node **rootPtr) {
             printf("--- Filter by Stock Availability ---\n\n");
 
             int minStock;
+            int stockValid;
 
             do {
                 printf("Input minimum stock[>= 0]: ");
-                scanf("%d", &minStock);
-                getchar();
-            } while (minStock < 0);
+                stockValid = safeReadInt(&minStock);
+                if (!stockValid) {
+                    printf("[!] Invalid input. Please enter a number.\n");
+                } else if (minStock < 0) {
+                    printf("[!] Stock must be 0 or greater.\n");
+                    stockValid = 0;
+                }
+            } while (!stockValid);
 
             printf("\nShowing products with stock >= %d:\n", minStock);
             printTableHeader();
