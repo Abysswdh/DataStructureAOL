@@ -15,119 +15,7 @@
 #include "bst.h"
 #include "menu.h"
 
-// AVL HELPER FUNCTIONS ---------------------------------------------------------------------------
 
-// return height of a node (-1 if NULL)
-int getHeight(Node *n) {
-    if (n == NULL) return -1;
-    return n->height;
-}
-
-// calculate balance factor (left height - right height)
-// positive = left-heavy, negative = right-heavy
-int getBalance(Node *n) {
-    if (n == NULL) return 0;
-    return getHeight(n->left) - getHeight(n->right);
-}
-
-// helper: return the bigger of two integers
-static int max(int a, int b) {
-    return (a > b) ? a : b;
-}
-
-// update height of a node based on its children
-static void updateHeight(Node *n) {
-    if (n != NULL)
-        n->height = 1 + max(getHeight(n->left), getHeight(n->right));
-}
-
-/*
-    Right Rotation (case: left-heavy)
-
-        y                x
-       / \              / \
-      x   T3    =>    T1   y
-     / \                  / \
-    T1  T2              T2   T3
-*/
-Node *rotateRight(Node *y) {
-    Node *x  = y->left;
-    Node *T2 = x->right;
-
-    // perform rotation
-    x->right = y;
-    y->left  = T2;
-
-    // update heights (y first because y is now child of x)
-    updateHeight(y);
-    updateHeight(x);
-
-    return x;   // x is new root of this subtree
-}
-
-/*
-    Left Rotation (case: right-heavy)
-
-      x                  y
-     / \                / \
-    T1   y      =>     x   T3
-        / \           / \
-       T2  T3        T1  T2
-*/
-Node *rotateLeft(Node *x) {
-    Node *y  = x->right;
-    Node *T2 = y->left;
-
-    // perform rotation
-    y->left  = x;
-    x->right = T2;
-
-    // update heights (x first because x is now child of y)
-    updateHeight(x);
-    updateHeight(y);
-
-    return y;   // y is new root of this subtree
-}
-
-/*
-    Rebalance a node after insert/delete
-    Checks 4 cases:
-      1. Left-Left   (balance > 1,  left child left-heavy or balanced)
-      2. Left-Right  (balance > 1,  left child right-heavy)
-      3. Right-Right (balance < -1, right child right-heavy or balanced)
-      4. Right-Left  (balance < -1, right child left-heavy)
-*/
-Node *rebalance(Node *n) {
-    if (n == NULL) return NULL;
-
-    // update height first
-    updateHeight(n);
-
-    int balance = getBalance(n);
-
-    // Case 1: Left-Left  =>  single right rotation
-    if (balance > 1 && getBalance(n->left) >= 0)
-        return rotateRight(n);
-
-    // Case 2: Left-Right  =>  left rotate left child, then right rotate node
-    if (balance > 1 && getBalance(n->left) < 0) {
-        n->left = rotateLeft(n->left);
-        return rotateRight(n);
-    }
-
-    // Case 3: Right-Right  =>  single left rotation
-    if (balance < -1 && getBalance(n->right) <= 0)
-        return rotateLeft(n);
-
-    // Case 4: Right-Left  =>  right rotate right child, then left rotate node
-    if (balance < -1 && getBalance(n->right) > 0) {
-        n->right = rotateRight(n->right);
-        return rotateLeft(n);
-    }
-
-    // already balanced, no rotation needed
-    return n;
-}
 
 // INSERT ---------------------------------------------------------------------------
 
@@ -141,7 +29,6 @@ static Node *createNode(Product p) {
     newNode->data   = p;
     newNode->left   = NULL;
     newNode->right  = NULL;
-    newNode->height = 0;   // leaf node starts at height 0
     return newNode;
 }
 
@@ -164,7 +51,7 @@ Node *insert(Node *root, Product p) {
             root->right = insert(root->right, p);
     }
 
-    return rebalance(root);
+    return root;
 }
 
 // DELETE ---------------------------------------------------------------------------
@@ -216,7 +103,7 @@ Node *deleteNodeById(Node *root, int id) {
         root->right = deleteNodeById(root->right, id);
     }
 
-    return rebalance(root);
+    return root;
 }
 
 // SEARCH ---------------------------------------------------------------------------
@@ -298,6 +185,17 @@ Node *findCheapest(Node *root) {
     return findCheapest(root->left);
 }
 
+// get the maximum product ID in the tree
+int getMaxId(Node *root) {
+    if (root == NULL) return 0;
+    int leftMax = getMaxId(root->left);
+    int rightMax = getMaxId(root->right);
+    int max = root->data.id;
+    if (leftMax > max) max = leftMax;
+    if (rightMax > max) max = rightMax;
+    return max;
+}
+
 // find the most expensive product = rightmost node in BST
 Node *findMostExpensive(Node *root) {
     if (root == NULL)        return NULL;
@@ -322,9 +220,14 @@ int countNodes(Node *root) {
     return 1 + countNodes(root->left) + countNodes(root->right);
 }
 
-// return the height of the tree (root's height, -1 if empty)
+// helper: return the bigger of two integers
+static int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// return the height of the tree
 // useful for Person 2 statistics
 int getTreeHeight(Node *root) {
     if (root == NULL) return -1;
-    return root->height;
+    return 1 + max(getTreeHeight(root->left), getTreeHeight(root->right));
 }

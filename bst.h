@@ -29,16 +29,8 @@ typedef struct Node {
     Product       data;
     struct Node  *left;
     struct Node  *right;
-    int           height;   // untuk AVL balancing
 } Node;
 
-// AVL HELPER FUNCTIONS ---------------------------------------------------------------------------
-
-int   getHeight   (Node *n);
-int   getBalance  (Node *n);
-Node *rotateRight (Node *y);
-Node *rotateLeft  (Node *x);
-Node *rebalance   (Node *n);
 
 // INSERT & DELETE ---------------------------------------------------------------------------
 
@@ -61,6 +53,7 @@ void reverseInorder (Node *root);   // High -> Low  (descending price)
 
 Node *findCheapest      (Node *root);   // node paling kiri  = termurah
 Node *findMostExpensive (Node *root);   // node paling kanan = termahal
+int   getMaxId          (Node *root);   // ambil ID terbesar yang ada di tree
 
 // UTILITY ---------------------------------------------------------------------------
 

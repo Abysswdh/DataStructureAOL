@@ -1,8 +1,8 @@
 /*
     E-Commerce Product Management System
-    Using BST/AVL Tree
+    Using BST
 
-    Person 1: Noel (Manuel Fides) — BST/AVL Core Logic
+    Person 1: Noel (Manuel Fides) — BST Core Logic
     Person 2: Aby (Putra Abyasa Wedha) — File Handling & Product Management
     Person 3: Damario — UI/UX & Filtering Features
 */
@@ -16,6 +16,8 @@
 // MAIN ---------------------------------------------------------------------------
 
 int main() {
+    system("mode con: cols=120 lines=40");
+    
     Node *root = NULL;
 
     // auto-load from file at startup
@@ -25,7 +27,7 @@ int main() {
     do {
         showHomeScreen();
         if (!safeReadInt(&choice)) {
-            printf("\n[!] Invalid input. Please enter a number (1-3).\n");
+            printf("\n                                  [!] Invalid input. Please enter a number (1-3).\n");
             pressEnterToContinue();
             choice = -1;
             continue;
@@ -39,12 +41,12 @@ int main() {
                 adminMenu(&root);
                 break;
             case 3:
-                printf("\nSaving data...\n");
+                printf("\n                                  Saving data...\n");
                 saveToFile(root);
-                printf("Goodbye!\n");
+                printf("                                  Goodbye!\n");
                 break;
             default:
-                printf("\nPlease choose 1-3!\n");
+                printf("\n                                  Please choose 1-3!\n");
                 pressEnterToContinue();
         }
     } while (choice != 3);
@@ -53,4 +55,4 @@ int main() {
     freeTree(root);
     return 0;
 }
-
+

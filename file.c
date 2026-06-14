@@ -38,7 +38,7 @@ static void saveHelper(Node *node, FILE *file) {
 void saveToFile(Node *root) {
     FILE *file = fopen(DB_FILE, "w");
     if (file == NULL) {
-        printf("[ERROR] Cannot open file for saving!\n");
+        printf("                                  [ERROR] Cannot open file for saving!\n");
         return;
     }
     saveHelper(root, file);
@@ -58,7 +58,7 @@ Node *loadFromFile(Node *root) {
     }
 
     fclose(file);
-    printf("[OK] Data loaded from %s\n", DB_FILE);
+    printf("                                  [OK] Data loaded from %s\n", DB_FILE);
     return root;
 }
 
@@ -69,7 +69,7 @@ Node *loadFromFile(Node *root) {
 Node *updateProduct(Node *root, int id) {
     Node *found = searchById(root, id);
     if (found == NULL) {
-        printf("[INFO] Product ID %d not found.\n", id);
+        printf("                                  [INFO] Product ID %d not found.\n", id);
         return root;
     }
 
@@ -77,25 +77,25 @@ Node *updateProduct(Node *root, int id) {
     int choice;
     int inputValid;
 
-    printf("\n--- Current Product Data ---\n");
-    printf("ID       : %d\n", found->data.id);
-    printf("Name     : %s\n", found->data.name);
-    printf("Category : %s\n", found->data.category);
-    printf("Price    : Rp %.2f\n", found->data.price);
-    printf("Stock    : %d\n", found->data.stock);
-    printf("Discount : %.1f%%\n", found->data.discount);
-    printf("----------------------------\n\n");
+    printf("\n                                  --- Current Product Data ---\n");
+    printf("                                  ID       : %d\n", found->data.id);
+    printf("                                  Name     : %s\n", found->data.name);
+    printf("                                  Category : %s\n", found->data.category);
+    printf("                                  Price    : Rp %.2f\n", found->data.price);
+    printf("                                  Stock    : %d\n", found->data.stock);
+    printf("                                  Discount : %.1f%%\n", found->data.discount);
+    printf("                                  ----------------------------\n\n");
 
-    printf("What do you want to update?\n");
-    printf("1. Name\n");
-    printf("2. Category\n");
-    printf("3. Price\n");
-    printf("4. Stock\n");
-    printf("5. Discount\n");
-    printf("6. Update All\n");
-    printf(">> ");
+    printf("                                  What do you want to update?\n");
+    printf("                                  1. Name\n");
+    printf("                                  2. Category\n");
+    printf("                                  3. Price\n");
+    printf("                                  4. Stock\n");
+    printf("                                  5. Discount\n");
+    printf("                                  6. Update All\n");
+    printf("                                  >> ");
     if (!safeReadInt(&choice) || choice < 1 || choice > 6) {
-        printf("[!] Invalid choice. Please enter a number between 1 and 6.\n");
+        printf("                                  [!] Invalid choice. Please enter a number between 1 and 6.\n");
         return root;
     }
 
@@ -103,7 +103,7 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 1 || choice == 6) {
         char newName[100];
         do {
-            printf("Input new name[3-99 chars]: ");
+            printf("                                  Input new name[3-99 chars]: ");
             if (fgets(newName, sizeof(newName), stdin) == NULL) newName[0] = '\0';
             newName[strcspn(newName, "\r\n")] = '\0';
         } while (!isValidName(newName));
@@ -112,21 +112,21 @@ Node *updateProduct(Node *root, int id) {
 
     // update category
     if (choice == 2 || choice == 6) {
-        printf("\nSelect category:\n");
-        printf("  1. Electronics\n");
-        printf("  2. Food\n");
-        printf("  3. Fashion\n");
-        printf("  4. Sports\n");
-        printf("  5. Books\n");
-        printf("  6. Home\n\n");
+        printf("\n                                  Select category:\n");
+        printf("                                    1. Electronics\n");
+        printf("                                    2. Food\n");
+        printf("                                    3. Fashion\n");
+        printf("                                    4. Sports\n");
+        printf("                                    5. Books\n");
+        printf("                                    6. Home\n\n");
 
         int catChoice;
         int catValid;
         do {
-            printf("Category[1-6]: ");
+            printf("                                  Category[1-6]: ");
             catValid = safeReadInt(&catChoice);
             if (!catValid || catChoice < 1 || catChoice > 6) {
-                printf("[!] Please enter a number between 1 and 6.\n");
+                printf("                                  [!] Please enter a number between 1 and 6.\n");
                 catValid = 0;
             }
         } while (!catValid);
@@ -143,12 +143,12 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 3 || choice == 6) {
         float newPrice;
         do {
-            printf("Input new price[> 0]: ");
+            printf("                                  Input new price[> 0]: ");
             inputValid = safeReadFloat(&newPrice);
             if (!inputValid) {
-                printf("[!] Invalid input. Please enter a number.\n");
+                printf("                                  [!] Invalid input. Please enter a number.\n");
             } else if (!isValidPrice(newPrice)) {
-                printf("[!] Price must be greater than 0.\n");
+                printf("                                  [!] Price must be greater than 0.\n");
                 inputValid = 0;
             }
         } while (!inputValid);
@@ -159,12 +159,12 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 4 || choice == 6) {
         int newStock;
         do {
-            printf("Input new stock[>= 0]: ");
+            printf("                                  Input new stock[>= 0]: ");
             inputValid = safeReadInt(&newStock);
             if (!inputValid) {
-                printf("[!] Invalid input. Please enter a number.\n");
+                printf("                                  [!] Invalid input. Please enter a number.\n");
             } else if (!isValidStock(newStock)) {
-                printf("[!] Stock must be 0 or greater.\n");
+                printf("                                  [!] Stock must be 0 or greater.\n");
                 inputValid = 0;
             }
         } while (!inputValid);
@@ -175,12 +175,12 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 5 || choice == 6) {
         float newDisc;
         do {
-            printf("Input new discount[0-100]%%: ");
+            printf("                                  Input new discount[0-100]%%: ");
             inputValid = safeReadFloat(&newDisc);
             if (!inputValid) {
-                printf("[!] Invalid input. Please enter a number.\n");
+                printf("                                  [!] Invalid input. Please enter a number.\n");
             } else if (!isValidDiscount(newDisc)) {
-                printf("[!] Discount must be between 0 and 100.\n");
+                printf("                                  [!] Discount must be between 0 and 100.\n");
                 inputValid = 0;
             }
         } while (!inputValid);
@@ -196,7 +196,7 @@ Node *updateProduct(Node *root, int id) {
     }
 
     saveToFile(root);
-    printf("\n[OK] Product ID %d updated successfully!\n", id);
+    printf("\n                                  [OK] Product ID %d updated successfully!\n", id);
     return root;
 }
 
@@ -204,14 +204,14 @@ Node *updateProduct(Node *root, int id) {
 Node *restockProduct(Node *root, int id, int addStock) {
     Node *found = searchById(root, id);
     if (found == NULL) {
-        printf("[INFO] Product ID %d not found.\n", id);
+        printf("                                  [INFO] Product ID %d not found.\n", id);
         return root;
     }
 
     int oldStock = found->data.stock;
     found->data.stock += addStock;
 
-    printf("[OK] %s restocked: %d -> %d (+%d)\n",
+    printf("                                  [OK] %s restocked: %d -> %d (+%d)\n",
            found->data.name, oldStock, found->data.stock, addStock);
 
     saveToFile(root);
@@ -252,34 +252,34 @@ int countDiscountedProducts(Node *root) {
 void showStatistics(Node *root) {
     int totalProducts = countNodes(root);
 
-    printf("\n========================================\n");
-    printf("        INVENTORY STATISTICS\n");
-    printf("========================================\n");
+    printf("\n                                  ========================================\n");
+    printf("                                          INVENTORY STATISTICS\n");
+    printf("                                  ========================================\n");
 
     if (totalProducts == 0) {
-        printf("  No products in inventory.\n");
-        printf("========================================\n");
+        printf("                                    No products in inventory.\n");
+        printf("                                  ========================================\n");
         return;
     }
 
-    printf("  Total products     : %d\n", totalProducts);
-    printf("  Total stock units  : %d\n", calcTotalStock(root));
-    printf("  Tree height (AVL)  : %d\n", getTreeHeight(root));
-    printf("  Discounted items   : %d\n", countDiscountedProducts(root));
+    printf("                                    Total products     : %d\n", totalProducts);
+    printf("                                    Total stock units  : %d\n", calcTotalStock(root));
+    printf("                                    Tree height (BST)  : %d\n", getTreeHeight(root));
+    printf("                                    Discounted items   : %d\n", countDiscountedProducts(root));
 
     Node *cheapest  = findCheapest(root);
     Node *expensive = findMostExpensive(root);
 
     if (cheapest)
-        printf("  Cheapest product   : %s (Rp %.2f)\n",
+        printf("                                    Cheapest product   : %s (Rp %.2f)\n",
                cheapest->data.name, cheapest->data.price);
     if (expensive)
-        printf("  Most expensive     : %s (Rp %.2f)\n",
+        printf("                                    Most expensive     : %s (Rp %.2f)\n",
                expensive->data.name, expensive->data.price);
 
-    printf("  --------------------------------\n");
-    printf("  Total inv. value   : Rp %.2f\n", calcTotalInventoryValue(root));
-    printf("========================================\n");
+    printf("                                    --------------------------------\n");
+    printf("                                    Total inv. value   : Rp %.2f\n", calcTotalInventoryValue(root));
+    printf("                                  ========================================\n");
 }
 
 // VALIDATION ---------------------------------------------------------------------------
@@ -388,7 +388,7 @@ void flushStdin(void) {
 // unified "Press Enter to continue" that uses fgets
 // replaces inconsistent getch()/getchar() calls
 void pressEnterToContinue(void) {
-    printf("\nPress Enter to continue ...");
+    printf("\n                                  Press Enter to continue ...");
     char buf[256];
     fgets(buf, sizeof(buf), stdin);
 }
