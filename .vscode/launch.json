@@ -5,14 +5,13 @@
       "name": "C/C++: Launch (gdb)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/program.exe",
+      "program": "${workspaceFolder}/main.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "externalConsole": true,
-      "MIMode": "gdb",
-      "preLaunchTask": "C/C++: gcc.exe build project"
+      "externalConsole": false,
+      "MIMode": "gdb"
     }
   ]
 }

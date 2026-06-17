@@ -23,7 +23,7 @@
 static Node *createNode(Product p) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     if (!newNode) {
-        printf("[ERROR] Memory allocation failed!\n");
+        printMargin(); printf("" COLOR_RED "[ERROR]" COLOR_RESET " Memory allocation failed!\n");
         return NULL;
     }
     newNode->data   = p;

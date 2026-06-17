@@ -15,7 +15,20 @@
 
 #include "bst.h"
 
+// ANSI Color Codes
+#define COLOR_RESET   "\033[0m"
+#define COLOR_CYAN    "\033[36m"
+#define COLOR_GREEN   "\033[32m"
+#define COLOR_YELLOW  "\033[33m"
+#define COLOR_RED     "\033[31m"
+
+
 // MENU SCREENS ---------------------------------------------------------------------------
+
+void printMargin(void);
+void printVerticalPadding(int lines);
+void printTableMargin(void);
+void printBudgetMargin(void);
 
 void showHomeScreen  (void);
 void customerMenu    (Node **rootPtr);   // pointer-to-pointer so root can change

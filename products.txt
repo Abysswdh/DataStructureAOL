@@ -33,4 +33,3 @@
 33|Sony WH-1000XM5|Electronics|4999000.00|30|15.00
 34|Dyson V15 Detect Vacuum|Home|12499000.00|8|10.00
 35|Apple MacBook Air M3|Electronics|17499000.00|12|5.00
-37|noelniga|Food|2000000000.00|1|60.00

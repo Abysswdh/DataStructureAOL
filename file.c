@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "file.h"
+#include "menu.h"
 
 // FILE I/O ---------------------------------------------------------------------------
 
@@ -38,7 +39,7 @@ static void saveHelper(Node *node, FILE *file) {
 void saveToFile(Node *root) {
     FILE *file = fopen(DB_FILE, "w");
     if (file == NULL) {
-        printf("                                  [ERROR] Cannot open file for saving!\n");
+        printMargin(); printf("" COLOR_RED "[ERROR]" COLOR_RESET " Cannot open file for saving!\n");
         return;
     }
     saveHelper(root, file);
@@ -58,7 +59,7 @@ Node *loadFromFile(Node *root) {
     }
 
     fclose(file);
-    printf("                                  [OK] Data loaded from %s\n", DB_FILE);
+    printMargin(); printf("" COLOR_GREEN "[OK]" COLOR_RESET " Data loaded from %s\n", DB_FILE);
     return root;
 }
 
@@ -69,7 +70,7 @@ Node *loadFromFile(Node *root) {
 Node *updateProduct(Node *root, int id) {
     Node *found = searchById(root, id);
     if (found == NULL) {
-        printf("                                  [INFO] Product ID %d not found.\n", id);
+        printMargin(); printf("" COLOR_YELLOW "[INFO]" COLOR_RESET " Product ID %d not found.\n", id);
         return root;
     }
 
@@ -77,25 +78,25 @@ Node *updateProduct(Node *root, int id) {
     int choice;
     int inputValid;
 
-    printf("\n                                  --- Current Product Data ---\n");
-    printf("                                  ID       : %d\n", found->data.id);
-    printf("                                  Name     : %s\n", found->data.name);
-    printf("                                  Category : %s\n", found->data.category);
-    printf("                                  Price    : Rp %.2f\n", found->data.price);
-    printf("                                  Stock    : %d\n", found->data.stock);
-    printf("                                  Discount : %.1f%%\n", found->data.discount);
-    printf("                                  ----------------------------\n\n");
+    printf("\n"); printMargin(); printf("--- Current Product Data ---\n");
+    printMargin(); printf("ID       : %d\n", found->data.id);
+    printMargin(); printf("Name     : %s\n", found->data.name);
+    printMargin(); printf("Category : %s\n", found->data.category);
+    printMargin(); printf("Price    : Rp %.2f\n", found->data.price);
+    printMargin(); printf("Stock    : %d\n", found->data.stock);
+    printMargin(); printf("Discount : %.1f%%\n", found->data.discount);
+    printMargin(); printf("----------------------------\n\n");
 
-    printf("                                  What do you want to update?\n");
-    printf("                                  1. Name\n");
-    printf("                                  2. Category\n");
-    printf("                                  3. Price\n");
-    printf("                                  4. Stock\n");
-    printf("                                  5. Discount\n");
-    printf("                                  6. Update All\n");
-    printf("                                  >> ");
+    printMargin(); printf("What do you want to update?\n");
+    printMargin(); printf("1. Name\n");
+    printMargin(); printf("2. Category\n");
+    printMargin(); printf("3. Price\n");
+    printMargin(); printf("4. Stock\n");
+    printMargin(); printf("5. Discount\n");
+    printMargin(); printf("6. Update All\n");
+    printMargin(); printf(">> ");
     if (!safeReadInt(&choice) || choice < 1 || choice > 6) {
-        printf("                                  [!] Invalid choice. Please enter a number between 1 and 6.\n");
+        printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Invalid choice. Please enter a number between 1 and 6.\n");
         return root;
     }
 
@@ -103,7 +104,7 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 1 || choice == 6) {
         char newName[100];
         do {
-            printf("                                  Input new name[3-99 chars]: ");
+            printMargin(); printf("Input new name[3-99 chars]: ");
             if (fgets(newName, sizeof(newName), stdin) == NULL) newName[0] = '\0';
             newName[strcspn(newName, "\r\n")] = '\0';
         } while (!isValidName(newName));
@@ -112,21 +113,21 @@ Node *updateProduct(Node *root, int id) {
 
     // update category
     if (choice == 2 || choice == 6) {
-        printf("\n                                  Select category:\n");
-        printf("                                    1. Electronics\n");
-        printf("                                    2. Food\n");
-        printf("                                    3. Fashion\n");
-        printf("                                    4. Sports\n");
-        printf("                                    5. Books\n");
-        printf("                                    6. Home\n\n");
+        printf("\n"); printMargin(); printf("Select category:\n");
+        printMargin(); printf("  1. Electronics\n");
+        printMargin(); printf("  2. Food\n");
+        printMargin(); printf("  3. Fashion\n");
+        printMargin(); printf("  4. Sports\n");
+        printMargin(); printf("  5. Books\n");
+        printMargin(); printf("  6. Home\n\n");
 
         int catChoice;
         int catValid;
         do {
-            printf("                                  Category[1-6]: ");
+            printMargin(); printf("Category[1-6]: ");
             catValid = safeReadInt(&catChoice);
             if (!catValid || catChoice < 1 || catChoice > 6) {
-                printf("                                  [!] Please enter a number between 1 and 6.\n");
+                printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Please enter a number between 1 and 6.\n");
                 catValid = 0;
             }
         } while (!catValid);
@@ -143,12 +144,12 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 3 || choice == 6) {
         float newPrice;
         do {
-            printf("                                  Input new price[> 0]: ");
+            printMargin(); printf("Input new price[> 0]: ");
             inputValid = safeReadFloat(&newPrice);
             if (!inputValid) {
-                printf("                                  [!] Invalid input. Please enter a number.\n");
+                printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Invalid input. Please enter a number.\n");
             } else if (!isValidPrice(newPrice)) {
-                printf("                                  [!] Price must be greater than 0.\n");
+                printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Price must be greater than 0.\n");
                 inputValid = 0;
             }
         } while (!inputValid);
@@ -159,12 +160,12 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 4 || choice == 6) {
         int newStock;
         do {
-            printf("                                  Input new stock[>= 0]: ");
+            printMargin(); printf("Input new stock[>= 0]: ");
             inputValid = safeReadInt(&newStock);
             if (!inputValid) {
-                printf("                                  [!] Invalid input. Please enter a number.\n");
+                printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Invalid input. Please enter a number.\n");
             } else if (!isValidStock(newStock)) {
-                printf("                                  [!] Stock must be 0 or greater.\n");
+                printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Stock must be 0 or greater.\n");
                 inputValid = 0;
             }
         } while (!inputValid);
@@ -175,12 +176,12 @@ Node *updateProduct(Node *root, int id) {
     if (choice == 5 || choice == 6) {
         float newDisc;
         do {
-            printf("                                  Input new discount[0-100]%%: ");
+            printMargin(); printf("Input new discount[0-100]%%: ");
             inputValid = safeReadFloat(&newDisc);
             if (!inputValid) {
-                printf("                                  [!] Invalid input. Please enter a number.\n");
+                printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Invalid input. Please enter a number.\n");
             } else if (!isValidDiscount(newDisc)) {
-                printf("                                  [!] Discount must be between 0 and 100.\n");
+                printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Discount must be between 0 and 100.\n");
                 inputValid = 0;
             }
         } while (!inputValid);
@@ -196,7 +197,7 @@ Node *updateProduct(Node *root, int id) {
     }
 
     saveToFile(root);
-    printf("\n                                  [OK] Product ID %d updated successfully!\n", id);
+    printf("\n"); printMargin(); printf("" COLOR_GREEN "[OK]" COLOR_RESET " Product ID %d updated successfully!\n", id);
     return root;
 }
 
@@ -204,14 +205,14 @@ Node *updateProduct(Node *root, int id) {
 Node *restockProduct(Node *root, int id, int addStock) {
     Node *found = searchById(root, id);
     if (found == NULL) {
-        printf("                                  [INFO] Product ID %d not found.\n", id);
+        printMargin(); printf("" COLOR_YELLOW "[INFO]" COLOR_RESET " Product ID %d not found.\n", id);
         return root;
     }
 
     int oldStock = found->data.stock;
     found->data.stock += addStock;
 
-    printf("                                  [OK] %s restocked: %d -> %d (+%d)\n",
+    printMargin(); printf("" COLOR_GREEN "[OK]" COLOR_RESET " %s restocked: %d -> %d (+%d)\n",
            found->data.name, oldStock, found->data.stock, addStock);
 
     saveToFile(root);
@@ -252,34 +253,34 @@ int countDiscountedProducts(Node *root) {
 void showStatistics(Node *root) {
     int totalProducts = countNodes(root);
 
-    printf("\n                                  ========================================\n");
-    printf("                                          INVENTORY STATISTICS\n");
-    printf("                                  ========================================\n");
+    printf("\n"); printMargin(); printf("========================================\n");
+    printMargin(); printf("        INVENTORY STATISTICS\n");
+    printMargin(); printf("========================================\n");
 
     if (totalProducts == 0) {
-        printf("                                    No products in inventory.\n");
-        printf("                                  ========================================\n");
+        printMargin(); printf("  No products in inventory.\n");
+        printMargin(); printf("========================================\n");
         return;
     }
 
-    printf("                                    Total products     : %d\n", totalProducts);
-    printf("                                    Total stock units  : %d\n", calcTotalStock(root));
-    printf("                                    Tree height (BST)  : %d\n", getTreeHeight(root));
-    printf("                                    Discounted items   : %d\n", countDiscountedProducts(root));
+    printMargin(); printf("  Total products     : %d\n", totalProducts);
+    printMargin(); printf("  Total stock units  : %d\n", calcTotalStock(root));
+    printMargin(); printf("  Tree height (BST)  : %d\n", getTreeHeight(root));
+    printMargin(); printf("  Discounted items   : %d\n", countDiscountedProducts(root));
 
     Node *cheapest  = findCheapest(root);
     Node *expensive = findMostExpensive(root);
 
     if (cheapest)
-        printf("                                    Cheapest product   : %s (Rp %.2f)\n",
+        printMargin(); printf("  Cheapest product   : %s (Rp %.2f)\n",
                cheapest->data.name, cheapest->data.price);
     if (expensive)
-        printf("                                    Most expensive     : %s (Rp %.2f)\n",
+        printMargin(); printf("  Most expensive     : %s (Rp %.2f)\n",
                expensive->data.name, expensive->data.price);
 
-    printf("                                    --------------------------------\n");
-    printf("                                    Total inv. value   : Rp %.2f\n", calcTotalInventoryValue(root));
-    printf("                                  ========================================\n");
+    printMargin(); printf("  --------------------------------\n");
+    printMargin(); printf("  Total inv. value   : Rp %.2f\n", calcTotalInventoryValue(root));
+    printMargin(); printf("========================================\n");
 }
 
 // VALIDATION ---------------------------------------------------------------------------
@@ -388,7 +389,7 @@ void flushStdin(void) {
 // unified "Press Enter to continue" that uses fgets
 // replaces inconsistent getch()/getchar() calls
 void pressEnterToContinue(void) {
-    printf("\n                                  Press Enter to continue ...");
+    printf("\n"); printMargin(); printf("Press Enter to continue ...");
     char buf[256];
     fgets(buf, sizeof(buf), stdin);
 }

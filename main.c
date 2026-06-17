@@ -27,7 +27,7 @@ int main() {
     do {
         showHomeScreen();
         if (!safeReadInt(&choice)) {
-            printf("\n                                  [!] Invalid input. Please enter a number (1-3).\n");
+            printf("\n"); printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Invalid input. Please enter a number (1-3).\n");
             pressEnterToContinue();
             choice = -1;
             continue;
@@ -41,12 +41,12 @@ int main() {
                 adminMenu(&root);
                 break;
             case 3:
-                printf("\n                                  Saving data...\n");
+                printf("\n"); printMargin(); printf("" COLOR_YELLOW "Saving data..." COLOR_RESET "\n");
                 saveToFile(root);
-                printf("                                  Goodbye!\n");
+                printMargin(); printf("" COLOR_GREEN "Goodbye!" COLOR_RESET "\n");
                 break;
             default:
-                printf("\n                                  Please choose 1-3!\n");
+                printf("\n"); printMargin(); printf("" COLOR_RED "[!]" COLOR_RESET " Please choose 1-3!\n");
                 pressEnterToContinue();
         }
     } while (choice != 3);
@@ -55,4 +55,4 @@ int main() {
     freeTree(root);
     return 0;
 }
-
+
