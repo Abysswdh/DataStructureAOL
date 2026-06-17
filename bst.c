@@ -1,12 +1,12 @@
 /*
     Person 1: Manuel Fides Waluyo (2902572096)
-    BST / AVL Core Logic — Implementation
+    BST Core Logic — Implementation
 
     E-Commerce Product Management System
-    Using: AVL Tree (self-balancing BST)
+    Using: Binary Search Tree (BST)
 
-    System uses AVL Tree for efficient product filtering
-    with automatic balancing for optimized searching.
+    System uses BST for efficient product filtering
+    for optimized searching.
 */
 
 #include <stdio.h>
@@ -19,7 +19,7 @@
 
 // INSERT ---------------------------------------------------------------------------
 
-// create a new AVL node with given product data
+// create a new BST node with given product data
 static Node *createNode(Product p) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     if (!newNode) {
@@ -32,7 +32,7 @@ static Node *createNode(Product p) {
     return newNode;
 }
 
-// insert a product into the AVL tree
+// insert a product into the BST
 // primary key = price, secondary key = id (for tie-breaking)
 // duplicate prices go to the right subtree
 Node *insert(Node *root, Product p) {

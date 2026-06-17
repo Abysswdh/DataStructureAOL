@@ -1,9 +1,9 @@
 /*
     Person 1: Noel (Manuel Fides)
-    BST / AVL Core Logic — Header
+    BST Core Logic — Header
 
     E-Commerce Product Management System
-    Using: AVL Tree (self-balancing BST)
+    Using: Binary Search Tree (BST)
 
     Key = price (float)
     Tie-breaking = product ID (int)
@@ -23,7 +23,7 @@ typedef struct Product {
     float  discount;        // dalam persen, e.g. 10.0 = 10%
 } Product;
 
-// NODE STRUCT (AVL) ---------------------------------------------------------------------------
+// NODE STRUCT (BST) ---------------------------------------------------------------------------
 
 typedef struct Node {
     Product       data;

@@ -6,7 +6,7 @@
 
     Using:
     - File Processing (pipe-delimited text)
-    - AVL Tree integration
+    - BST integration
 */
 
 #ifndef FILE_H

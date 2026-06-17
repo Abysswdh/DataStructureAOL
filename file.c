@@ -6,7 +6,7 @@
 
     Using:
     - File Processing (pipe-delimited text)
-    - AVL Tree integration (insert, delete, search from Person 1)
+    - BST integration (insert, delete, search from Person 1)
     - Auto-save after every data modification
 */
 

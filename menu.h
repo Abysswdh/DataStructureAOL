@@ -1,12 +1,12 @@
 /*
-    Person 3: Damario | [Student ID]
+    Person 3: Damario
     UI/UX & Filtering Features — Header
 
     E-Commerce Product Management System
 
     Using:
     - Console-based UI with formatted table display
-    - AVL Tree integration (Person 1 & 2)
+    - BST integration (Person 1 & 2)
     - Category, discount, stock, and budget filtering
 */
 
